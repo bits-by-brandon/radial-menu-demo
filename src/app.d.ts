@@ -9,9 +9,4 @@ declare global {
 	}
 }
 
-declare type Vector = {
-	x: number;
-	y: number;
-}
-
 export {};

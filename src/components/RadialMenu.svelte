@@ -88,7 +88,7 @@
 		class="circle"
 		class:active={isActive}
 		style:background-position="{mousePos.x - position.x}px {mousePos.y - position.y}px"
-    draggable="false"
+		draggable="false"
 		bind:this={circle}
 	/>
 
@@ -120,6 +120,8 @@
 		width: calc(var(--radius) * 2);
 		height: calc(var(--radius) * 2);
 		position: absolute;
+    pointer-events: none;
+		z-index: 10;
 	}
 
 	.circle {
@@ -128,7 +130,7 @@
 		border-radius: 100%;
 		border: 1px solid var(--stoke-color);
 		transition: transform 400ms cubic-bezier(0, 0.76, 0.24, 1), opacity 200ms linear;
-		background: radial-gradient(circle, rgba(34, 0, 255, 0.05) 0%, rgba(255, 255, 255, 0) 90%)
+		background: radial-gradient(circle, rgba(34, 0, 255, 0.05) 0%, rgba(255, 255, 255, 0.05) 90%)
 			no-repeat;
 		opacity: 0;
 		transform: scale(0.5);

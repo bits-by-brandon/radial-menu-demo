@@ -23,3 +23,7 @@ export function getAngle(x1: number, y1: number, x2: number, y2: number) {
 	const dx = x2 - x1;
 	return Math.atan2(dy, dx) + Math.PI; // range [-PI, PI]
 }
+
+export function lerp(start: number, end: number, amt: number) {
+	return (1 - amt) * start + amt * end;
+}
