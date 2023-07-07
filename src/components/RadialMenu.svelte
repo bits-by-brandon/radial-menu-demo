@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
+
 	import RadialMenuItem from './RadialMenuItem.svelte';
 	import { getAngle, getDistance } from '../lib/math';
+	import { mousePos, menuOpen } from '../stores/cursor';
 
 	export let items: string[] = [];
 
@@ -9,17 +11,15 @@
 	let circle: HTMLElement;
 	let innerCircle: HTMLElement;
 
-	let mousePos: Vector = { x: 0, y: 0 };
 	let position: Vector = { x: 0, y: 0 };
 	let radius = 150;
 	let innerRadius = 50;
-	let isActive = false;
 	let isPastThreshold = false;
 	let hoveredOption = -1;
 
 	function getOption() {
 		if (isPastThreshold) {
-			let angle = getAngle(mousePos.x, mousePos.y, position.x, position.y);
+			let angle = getAngle($mousePos.x, $mousePos.y, position.x, position.y);
 			angle += Math.PI / 2;
 			if (angle > 2 * Math.PI) {
 				angle -= 2 * Math.PI;
@@ -32,23 +32,26 @@
 	}
 
 	function handleMouseMove(event: MouseEvent) {
-		mousePos = { x: event.clientX, y: event.clientY };
+		mousePos.set({
+			x: event.clientX + window.scrollX,
+			y: event.clientY + window.scrollY
+		});
 
-		if (isActive) {
-			isPastThreshold = getDistance(mousePos.x, mousePos.y, position.x, position.y) > innerRadius;
+		if ($menuOpen) {
+			isPastThreshold = getDistance($mousePos.x, $mousePos.y, position.x, position.y) > innerRadius;
 			hoveredOption = getOption();
 		}
 	}
 
 	function handleMouseDown(event: MouseEvent) {
-		position = { x: event.clientX, y: event.clientY };
+		position = { ...$mousePos };
 		isPastThreshold = false;
-		isActive = true;
+		$menuOpen = true;
 		hoveredOption = -1;
 	}
 
 	function handleMouseUp(event: MouseEvent) {
-		isActive = false;
+    $menuOpen = false;
 		isPastThreshold = false;
 		hoveredOption = -1;
 	}
@@ -86,8 +89,8 @@
 >
 	<div
 		class="circle"
-		class:active={isActive}
-		style:background-position="{mousePos.x - position.x}px {mousePos.y - position.y}px"
+		class:active={$menuOpen}
+		style:background-position="{$mousePos.x - position.x}px {$mousePos.y - position.y}px"
 		draggable="false"
 		bind:this={circle}
 	/>
@@ -96,7 +99,6 @@
 		{#each items as item, i}
 			<RadialMenuItem
 				{radius}
-				{isActive}
 				isHovered={hoveredOption == i}
 				arc={getArc(i, items.length)}
 				offset={10}
@@ -108,7 +110,7 @@
 
 	<div
 		class="innerCircle"
-		class:active={isActive}
+		class:active={$menuOpen}
 		style:--inner-radius="{innerRadius}px"
 		bind:this={innerCircle}
 	/>
@@ -120,7 +122,7 @@
 		width: calc(var(--radius) * 2);
 		height: calc(var(--radius) * 2);
 		position: absolute;
-    pointer-events: none;
+		pointer-events: none;
 		z-index: 10;
 	}
 

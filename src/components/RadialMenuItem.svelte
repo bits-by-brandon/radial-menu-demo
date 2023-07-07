@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { polarToCartesian } from '../lib/math';
+	import { menuOpen } from '../stores/cursor';
 
 	type Arc = {
 		start: number;
@@ -10,7 +11,6 @@
 	let lineEl: SVGPathElement;
 
 	export let arc: Arc;
-	export let isActive: boolean;
 	export let isHovered: boolean;
 	export let offset: number;
 	export let radius: number;
@@ -30,7 +30,7 @@
 	$: textPosStart = polarToCartesian(radius * 0.5, midArc);
 	$: textPosEnd = polarToCartesian(radius * 0.6, midArc);
 	$: textPosHover = polarToCartesian(radius * 0.7, midArc);
-	$: textPos = isHovered ? textPosHover : isActive ? textPosEnd : textPosStart;
+	$: textPos = isHovered ? textPosHover : $menuOpen ? textPosEnd : textPosStart;
 </script>
 
 <div class="item">
@@ -38,10 +38,10 @@
 		<path
 			bind:this={lineEl}
 			class="line"
-			class:active={isActive}
+			class:active={$menuOpen}
 			style:stroke-dasharray={length}
-			style:stroke-dashoffset={isActive ? 0 : length}
-			style:opacity={isActive ? 1 : 0}
+			style:stroke-dashoffset={$menuOpen ? 0 : length}
+			style:opacity={$menuOpen ? 1 : 0}
 			stroke-width="1"
 			d={path}
 		/>
@@ -49,9 +49,9 @@
 
 	<div
 		class="textContainer"
-		class:active={isActive}
+		class:active={$menuOpen}
 		class:hovered={isHovered}
-		style:opacity={isActive ? 1 : 0}
+		style:opacity={$menuOpen ? 1 : 0}
 		style:top="50%"
 		style:left="50%"
 		style:transform={`translate(${textPos.x}px, ${textPos.y}px)`}

@@ -24,6 +24,10 @@ export function getAngle(x1: number, y1: number, x2: number, y2: number) {
 	return Math.atan2(dy, dx) + Math.PI; // range [-PI, PI]
 }
 
+export function randInt(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export function lerp(start: number, end: number, amt: number) {
 	return (1 - amt) * start + amt * end;
 }
